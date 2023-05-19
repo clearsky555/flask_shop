@@ -1,0 +1,7 @@
+Django==4.1
+psycopg2-binary==2.9.6
+pillow==9.5.0
+djangorestframework==3.14.0
+django-filter==23.2
+Markdown==3.4.3
+drf-yasg==1.21.5
