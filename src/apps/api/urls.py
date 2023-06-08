@@ -38,6 +38,11 @@ urlpatterns = [
     path('user/change_password/', views.ChangePasswordAPIView.as_view()),
     path('user/register/', views.RegisterAPIView.as_view()),
     path('user/update/', views.UserUpdateAPIView.as_view()),
+
+    #endpoints for favorites product
+    path('user/add/favorite/<int:pk>/', views.AddFavoriteProduct.as_view()),
+    path('user/remove/favorite/<int:pk>/', views.RemoveFavoriteProduct.as_view()),
+    path('user/favorites/list/', views.UserProductFavoritesList.as_view()),
 ]
 
 urlpatterns += router.urls

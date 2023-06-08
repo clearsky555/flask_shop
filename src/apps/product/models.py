@@ -1,4 +1,8 @@
 from django.db import models
+from autoslug import AutoSlugField
+
+from src.apps.product.utils import transliterate
+
 
 # Create your models here.
 
@@ -18,7 +22,14 @@ class Color(models.Model):
 
 class Category(models.Model):
     name = models.CharField('Название', max_length=50)
-    slug = models.SlugField(max_length=70)
+    slug = AutoSlugField(
+        populate_from=lambda instance: transliterate(f"{instance.parent.name}-{instance.name}"),
+        max_length=70,
+        unique=True,
+        slugify=lambda value: value.replace(" ", "-")
+    )
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='sub_categories', blank=True)
+    is_main = models.BooleanField('главная', default=False)
 
     class Meta:
         verbose_name = 'Категория'
@@ -44,9 +55,22 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.title}'
 
+    @property
+    def main_image(self):
+        images = self.images.all()
+        if images:
+            return images[0].image.url
+        return ''
+
+    def get_other_images(self):
+        images = self.images.all()
+        if images.count() > 1:
+            return images[1:]
+        return []
+
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='product/images/')
 
     def __str__(self):
