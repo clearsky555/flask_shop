@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from rest_framework.decorators import api_view
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
@@ -11,6 +12,8 @@ from src.apps.accounts.models import User
 from src.apps.accounts.serializers import *
 from src.apps.product.models import Product
 from src.apps.product.serializers import ProductSerializer
+
+from src.apps.cart.cart import Cart
 
 
 class UserGetViewSet(ModelViewSet):
@@ -102,7 +105,7 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 
 
 class AddFavoriteProduct(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
     def get(self, request, *args, **kwargs):
         product_id = kwargs.get('pk')
         product = get_object_or_404(Product, id=product_id)
@@ -120,7 +123,7 @@ class AddFavoriteProduct(APIView):
 
 
 class RemoveFavoriteProduct(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
     def get(self, request, *args, **kwargs):
         product_id = kwargs.get('pk')
         product = get_object_or_404(Product, id=product_id)
@@ -146,3 +149,23 @@ class UserProductFavoritesList(generics.ListAPIView):
         user = self.request.user
         products = user.favorites.all()
         return products
+
+
+@api_view(['POST'])
+def add_cart(request, pk):
+    if request.method == 'POST':
+        cart = Cart(request)
+        product = get_object_or_404(Product, pk=pk)
+        cart.add(product)
+        return Response({'message':'ok'}, status=200)
+    return Response({'message':'Not allowed method'}, status=400)
+
+
+@api_view(['POST'])
+def minus_cart(request, pk):
+    if request.method == 'POST':
+        cart = Cart(request)
+        product = get_object_or_404(Product, pk=pk)
+        cart.minus(product)
+        return Response({'message':'ok'}, status=200)
+    return Response({'message':'Not allowed method'}, status=400)

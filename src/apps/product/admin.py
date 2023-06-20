@@ -19,7 +19,7 @@ class CategoryChoiceField(forms.ModelChoiceField):
 
 
 class CategoryAdminForm(forms.ModelForm):
-    parent = forms.ModelChoiceField(queryset=Category.objects.filter(is_main=True))
+    parent = forms.ModelChoiceField(queryset=Category.objects.filter(is_main=True), required=False)
 
     class Meta:
         model = Category

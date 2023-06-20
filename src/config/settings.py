@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'src.apps.api',
     'src.apps.accounts',
     'src.apps.product',
+    'src.apps.cart',
+    'src.apps.order',
 ]
 
 MIDDLEWARE = [
@@ -76,6 +78,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
 
                 'src.apps.product.category_context.get_category',
+                'src.apps.accounts.login_context.get_form',
+                'src.apps.cart.cart_context.get_cart_context',
             ],
         },
     },
@@ -157,3 +161,5 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
 }
+
+CART_SESSION_ID = 'cart'

@@ -15,19 +15,30 @@ class Color(models.Model):
         verbose_name = 'Цвет'
         verbose_name_plural = 'Цвета'
 
+    # def get_slug_value(instance):
+    #     if instance.is_main:
+    #         return transliterate(f'{instance.name}'.lower())
+    #     return transliterate(f'{instance.parent.name}-{instance.name}'.lower())
+    #
+    # def get_slugify_value(value):
+    #     return value.replace(' ', '-')
+
 
     def __str__(self):
         return f'{self.name}'
 
+def get_slug_value(instance):
+    if instance.is_main:
+        return transliterate(f"{instance.name}".lower())
+    return transliterate(f"{instance.parent.name}-{instance.name}".lower())
 
+def get_slugify_value(value):
+    return value.replace(' ','-')
 class Category(models.Model):
     name = models.CharField('Название', max_length=50)
-    slug = AutoSlugField(
-        populate_from=lambda instance: transliterate(f"{instance.parent.name}-{instance.name}"),
-        max_length=70,
-        unique=True,
-        slugify=lambda value: value.replace(" ", "-")
-    )
+    slug = AutoSlugField(populate_from=get_slug_value,
+                         unique=True,
+                         slugify=get_slugify_value)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='sub_categories', blank=True)
     is_main = models.BooleanField('главная', default=False)
 
